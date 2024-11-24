@@ -1,40 +1,18 @@
 #include "Channel.h"
+#include <iostream>
 
-// Constructor initializes channel with a specific frequency band and sets the channel to idle
-Channel::Channel(const FrequencyBand& band)
-    : frequency_band(band), is_busy(false) {}
+Channel::Channel(const std::string& frequencyBand)
+    : frequencyBand(frequencyBand), noiseLevel(0) {}
 
-// Check if the channel is busy
-bool Channel::isBusy() const {
-    return is_busy;
+void Channel::addNoise(int noise) {
+    noiseLevel += noise;
+    std::cout << "Added noise of level " << noise << " to " << frequencyBand << " band." << std::endl;
 }
 
-// Set the channel status (busy or idle)
-void Channel::setBusy(bool status) {
-    is_busy = status;
+int Channel::getSignalStrength() const {
+    return 100 - noiseLevel;  // The signal strength decreases with more noise
 }
 
-// Get the frequency band associated with the channel
-FrequencyBand Channel::getFrequencyBand() const {
-    return frequency_band;
-}
-
-// Add a packet to the channel's queue
-void Channel::addPacketToQueue(const Packet& packet) {
-    packet_queue.push_back(packet);
-}
-
-// Get the next packet from the queue
-Packet Channel::getNextPacket() {
-    if (!packet_queue.empty()) {
-        Packet next_packet = packet_queue.front();
-        packet_queue.erase(packet_queue.begin());
-        return next_packet;
-    }
-    throw std::runtime_error("Channel queue is empty.");
-}
-
-// Check if the queue is empty
-bool Channel::isQueueEmpty() const {
-    return packet_queue.empty();
+const std::string& Channel::getFrequencyBand() const {
+    return frequencyBand;
 }

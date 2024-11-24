@@ -1,20 +1,26 @@
 #include "FrequencyBand.h"
+#include <iostream>
 
-// Constructor initializes frequency band attributes
-FrequencyBand::FrequencyBand(double centerFreq, double bw, const std::string& mod)
-    : center_frequency(centerFreq), bandwidth(bw), modulation(mod) {}
+FrequencyBand::FrequencyBand(const std::string& band, int bandwidth, int range)
+    : band(band), bandwidth(bandwidth), range(range) {}
 
-// Returns the center frequency of the band
-double FrequencyBand::getCenterFrequency() const {
-    return center_frequency;
+void FrequencyBand::checkBandwidth() const {
+    std::cout << "Bandwidth for " << band << " is " << bandwidth << " MHz." << std::endl;
 }
 
-// Returns the bandwidth of the band
-double FrequencyBand::getBandwidth() const {
+void FrequencyBand::switchBand(const std::string& newBand) {
+    band = newBand;
+    std::cout << "Switched to the " << band << " frequency band." << std::endl;
+}
+
+const std::string& FrequencyBand::getBand() const {
+    return band;
+}
+
+int FrequencyBand::getBandwidth() const {
     return bandwidth;
 }
 
-// Returns the modulation type
-std::string FrequencyBand::getModulation() const {
-    return modulation;
+int FrequencyBand::getRange() const {
+    return range;
 }

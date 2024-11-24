@@ -1,29 +1,35 @@
 #include "AccessPoint.h"
-#include "User.h"
+#include "Device.h"  // Include Device.h to use Device in the methods
+#include <iostream>
+#include<algorithm>
 
-// Constructor initializes the Access Point with its unique ID, bandwidth, modulation, and backoff settings
-AccessPoint::AccessPoint(const std::string& id, double bandwidth, const std::string& mod, double max_backoff)
-    : Device(id, bandwidth, mod), max_backoff_time(max_backoff), channel_bandwidth(bandwidth) {}
+// Constructor: Initializes AccessPoint with ssid and bandwidth
+AccessPoint::AccessPoint(const std::string& ssid, int bandwidth)
+    : Device(ssid), ssid(ssid), bandwidth(bandwidth) {}  // Call Device constructor with ssid
 
-// Virtual destructor
-AccessPoint::~AccessPoint() {
-    // Cleanup if necessary when an AccessPoint is destroyed
-    disconnectAllUsers();
+// Connect a device to the Access Point
+void AccessPoint::connectDevice(Device* device) {
+    std::cout << "Device connected to Access Point: " << device->getDeviceName() << "\n";
+    connectedDevices.push_back(device);
 }
 
-// Adds a user to the list of connected users
-void AccessPoint::connectUser(User* user) {
-    connected_users.push_back(user);
+// Disconnect a device from the Access Point
+void AccessPoint::disconnectDevice(Device* device) {
+    std::cout << "Device disconnected from Access Point: " << device->getDeviceName() << "\n";
+    connectedDevices.erase(std::remove(connectedDevices.begin(), connectedDevices.end(), device), connectedDevices.end());
 }
 
-// Returns the number of users currently connected to the Access Point
-size_t AccessPoint::getConnectedUserCount() const {
-    return connected_users.size();
+// Get the SSID of the Access Point
+const std::string& AccessPoint::getSSID() const {
+    return ssid;
 }
 
-// Clears the list of connected users
-void AccessPoint::disconnectAllUsers() {
-    connected_users.clear();
+// Get the bandwidth of the Access Point
+int AccessPoint::getBandwidth() const {
+    return bandwidth;
 }
 
-// Pure virtual function transmitData will be implemented by derived classes (WiFi4AP, WiFi5AP, etc.)
+// Get the list of connected devices
+std::vector<Device*> AccessPoint::getConnectedDevices() const {
+    return connectedDevices;
+}

@@ -1,69 +1,69 @@
 #include "WiFi4AP.h"
 #include <iostream>
-#include <limits>  // For setting latency to max double
+#include <chrono>
+#include <thread>
+#include <random>
 
-// Constructor initializes the channel and sets max backoff time
-WiFi4AP::WiFi4AP(const Channel& chan, double maxBackoff)
-    : channel(chan), max_backoff_time(maxBackoff), total_data_transmitted(0), total_time(0) {
-    std::srand(static_cast<unsigned>(std::time(0))); // Seed the random number generator
+WiFi4AP::WiFi4AP(const std::string& ssid, int bandwidth)
+    : AccessPoint(ssid, bandwidth) {
+    // Calculate the transmission rate based on modulation and coding rate
+    transmissionRate = bandwidth * 8 * 10e6 / 6;  // 20 MHz * 8 bits / 6 for 256-QAM and 5/6 coding rate
+    totalData = 0;
+    totalTime = 0;
+    maxLatency = 0;
+    avgLatency = 0;
 }
 
-// Connect a user to the AP
-void WiFi4AP::connectUser(User* user) {
-    connected_users.push_back(user);
-}
+// Simulate the transmission for the given number of users
+void WiFi4AP::simulateCommunication(int numUsers) {
+    std::cout << "Simulation starting for " << numUsers << " users...\n";
 
-// Disconnect a user from the AP
-void WiFi4AP::disconnectUser(User* user) {
-    connected_users.erase(std::remove(connected_users.begin(), connected_users.end(), user), connected_users.end());
-}
+    // Set up random number generator for backoff time
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> distribution(0, 5);  // Random backoff between 0 and 5 ms (upper bound)
 
-// Helper function to generate a random backoff time within the max limit
-double WiFi4AP::generateRandomBackoffTime() const {
-    return static_cast<double>(std::rand()) / RAND_MAX * max_backoff_time;
-}
+    for (int i = 0; i < numUsers; ++i) {
+        Device* userDevice = new Device("User_" + std::to_string(i + 1));
+        devices.push_back(userDevice);
 
-// Simulate the transmission process for connected users
-void WiFi4AP::transmit() {
-    const int PACKET_SIZE = 1024; // Each packet is 1 KB (1024 bytes)
-    for (User* user : connected_users) {
-        bool packet_transmitted = false;
-        double start_time = total_time;  // Record the start time of transmission
+        // Simulate transmission process for each device
+        bool channelFree = true;  // Assume channel is free initially
+        int retries = 0;
+        double startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        double latency = 0;
 
-        while (!packet_transmitted) {
-            if (!channel.isBusy()) {
-                // If channel is free, transmit the packet
-                channel.setBusy(true); // Mark channel as busy
-                total_data_transmitted += PACKET_SIZE; // Increment total data transmitted
-                double latency = total_time - start_time; // Calculate latency for this packet
-                latencies.push_back(latency); // Store the latency
-                total_time += 1; // Assume 1 ms for transmission time
-                channel.setBusy(false); // Mark channel as idle
-                packet_transmitted = true;
+        while (retries < 5) {  // Retry up to 5 times
+            if (channelFree) {
+                // Simulate data transmission (with fixed time for demo purposes)
+                double transmissionTime = 5.0;  // Fixed transmission time of 5ms for the demo
+                std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(transmissionTime)));
+
+                totalData += 1024;  // Increase the transmitted data
+                latency = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - startTime;
+                if (latency > maxLatency) {
+                    maxLatency = latency;
+                }
+                totalTime += latency;
+                break;
             } else {
-                // If the channel is busy, apply a random backoff
-                double backoff_time = generateRandomBackoffTime();
-                total_time += backoff_time;
+                // Simulate backoff if the channel is busy (with fixed backoff time)
+                int backoffTime = distribution(generator);  // Random backoff time in ms (between 0 and 5 ms)
+                std::this_thread::sleep_for(std::chrono::milliseconds(backoffTime));
             }
+            retries++;
         }
     }
+
+    std::cout << "Simulation completed.\n";
 }
 
-// Calculate throughput in Mbps
-double WiFi4AP::calculateThroughput() const {
-    double total_seconds = total_time / 1000.0; // Convert total time from milliseconds to seconds
-    return (total_data_transmitted * 8) / (total_seconds * 1'000'000); // Throughput in Mbps
-}
+// Calculate throughput, average latency, and maximum latency
+void WiFi4AP::calculateMetrics(int numUsers) {
+    float throughput = totalData / totalTime;  // Throughput in KB/ms
 
-// Calculate average latency in milliseconds
-double WiFi4AP::calculateAverageLatency() const {
-    if (latencies.empty()) return 0.0;
-    double total_latency = std::accumulate(latencies.begin(), latencies.end(), 0.0);
-    return total_latency / latencies.size();
-}
+    avgLatency = totalTime / numUsers;  // Average latency in ms
 
-// Get the maximum latency recorded
-double WiFi4AP::getMaxLatency() const {
-    if (latencies.empty()) return 0.0;
-    return *std::max_element(latencies.begin(), latencies.end());
+    std::cout << "Throughput: " << throughput << " KB/ms" << std::endl;
+    std::cout << "Average Latency: " << avgLatency << " ms" << std::endl;
+    std::cout << "Maximum Latency: " << maxLatency << " ms" << std::endl;
 }

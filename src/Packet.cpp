@@ -1,30 +1,25 @@
 #include "Packet.h"
+#include <iostream>
 
-// Constructor initializes packet attributes
-Packet::Packet(int size, const std::string& source, const std::string& destination, double time, bool ack)
-    : packet_size(size), source_id(source), destination_id(destination), timestamp(time), ack_required(ack) {}
+Packet::Packet(int packetSize, Device* source, Device* destination)
+    : packetSize(packetSize), source(source), destination(destination) {}
 
-// Returns the size of the packet
-int Packet::getSize() const {
-    return packet_size;
+int Packet::getPacketSize() const {
+    return packetSize;
 }
 
-// Returns the source ID of the packet
-std::string Packet::getSourceId() const {
-    return source_id;
+Device* Packet::getSource() const {
+    return source;
 }
 
-// Returns the destination ID of the packet
-std::string Packet::getDestinationId() const {
-    return destination_id;
+Device* Packet::getDestination() const {
+    return destination;
 }
 
-// Returns the timestamp of the packet
-double Packet::getTimestamp() const {
-    return timestamp;
-}
-
-// Checks if the packet requires an acknowledgment
-bool Packet::isAckRequired() const {
-    return ack_required;
+void Packet::transmit() {
+    if (source != nullptr && destination != nullptr) {
+        std::cout << "Transmitting packet of size " << packetSize 
+                  << " from " << source->getDeviceName() 
+                  << " to " << destination->getDeviceName() << std::endl;
+    }
 }
