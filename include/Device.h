@@ -1,36 +1,27 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include <string>
+#include <string>  // Include <string> for std::string
+
+// Forward declaration of AccessPoint class
+class AccessPoint;
 
 class Device {
-protected:
-    std::string device_id;         // Unique identifier for the device
-    double supported_bandwidth;    // Supported bandwidth (in MHz or another unit)
-    std::string modulation;        // Modulation scheme (e.g., 256-QAM, QPSK, etc.)
-
 public:
-    Device(const std::string& id, double bandwidth, const std::string& mod)
-        : device_id(id), supported_bandwidth(bandwidth), modulation(mod) {}
+    // Constructor to initialize the device with a name
+    Device(const std::string& deviceName);
 
-    // Getter and Setter for device_id
-    std::string getDeviceId() const { return device_id; }
-    void setDeviceId(const std::string& id) { device_id = id; }
+    // Methods using AccessPoint
+    void connectToAP(AccessPoint* ap);  // Connect the device to an Access Point
+    void disconnectFromAP(AccessPoint* ap);  // Disconnect the device from an Access Point
 
-    // Getter and Setter for supported_bandwidth
-    double getSupportedBandwidth() const { return supported_bandwidth; }
-    void setSupportedBandwidth(double bandwidth) { supported_bandwidth = bandwidth; }
+    const std::string& getDeviceName() const;  // Get the device name
+    bool getConnectionStatus() const;  // Get the connection status of the device
+    void setConnectionStatus(bool status);  // Set the connection status
 
-    // Getter and Setter for modulation
-    std::string getModulation() const { return modulation; }
-    void setModulation(const std::string& mod) { modulation = mod; }
-
-    // Pure virtual functions for sending and receiving data
-    virtual void sendData() = 0;
-    virtual void receiveData() = 0;
-
-    // Virtual destructor for proper cleanup
-    virtual ~Device() {}
+private:
+    std::string deviceName;  // Store the device name
+    bool connectionStatus;  // Store the connection status
 };
 
 #endif // DEVICE_H

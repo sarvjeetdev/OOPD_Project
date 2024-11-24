@@ -2,47 +2,27 @@
 #define WIFI4AP_H
 
 #include "AccessPoint.h"
-#include "Channel.h"
-#include "User.h"
+#include "Device.h"
 #include <vector>
-#include <cstdlib>  // For random backoff time generation
-#include <ctime>    // For seeding the random number generator
-#include <algorithm> // For calculating max latency
-#include <numeric>   // For calculating average latency
+#include <random>
 
 class WiFi4AP : public AccessPoint {
-private:
-    Channel channel;                       // Channel used by the WiFi 4 AP
-    std::vector<User*> connected_users;    // List of users connected to this AP
-    double max_backoff_time;               // Maximum backoff time in milliseconds
-    double total_data_transmitted;         // Total data transmitted in bytes
-    double total_time;                     // Total simulation time in milliseconds
-    std::vector<double> latencies;         // List of latencies for packets
-
-    // Helper function to generate a random backoff time
-    double generateRandomBackoffTime() const;
-
 public:
-    // Constructor
-    WiFi4AP(const Channel& chan, double maxBackoff = 10.0);
+    WiFi4AP(const std::string& ssid, int bandwidth);
+    
+    // Simulate WiFi 4 communication for given number of users
+    void simulateCommunication(int numUsers);
 
-    // Connect a user to the AP
-    void connectUser(User* user) override;
+    // Calculate throughput, average latency, and maximum latency
+    void calculateMetrics(int numUsers);
 
-    // Disconnect a user from the AP
-    void disconnectUser(User* user) override;
-
-    // Simulate transmission process
-    void transmit() override;
-
-    // Calculate and return throughput in Mbps
-    double calculateThroughput() const;
-
-    // Calculate and return average latency
-    double calculateAverageLatency() const;
-
-    // Get the maximum latency recorded
-    double getMaxLatency() const;
+private:
+    std::vector<Device*> devices;
+    double transmissionRate;  // Transmission rate in Mbps
+    double totalData;         // Total data transmitted in KB
+    double totalTime;         // Total time for transmission in seconds
+    double maxLatency;        // Maximum latency
+    double avgLatency;        // Average latency
 };
 
 #endif // WIFI4AP_H

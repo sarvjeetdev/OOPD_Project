@@ -4,23 +4,20 @@
 #include <string>
 
 class FrequencyBand {
-private:
-    double center_frequency;   // Center frequency of the band in MHz
-    double bandwidth;          // Bandwidth in MHz (e.g., 20 MHz, 40 MHz)
-    std::string modulation;    // Modulation type (e.g., 256-QAM)
-
 public:
-    // Constructor
-    FrequencyBand(double centerFreq, double bw, const std::string& mod);
+    FrequencyBand(const std::string& band, int bandwidth, int range);
 
-    // Getter for center frequency
-    double getCenterFrequency() const;
+    void checkBandwidth() const;  // Display the bandwidth of the current frequency band
+    void switchBand(const std::string& newBand);  // Switch to a different frequency band
 
-    // Getter for bandwidth
-    double getBandwidth() const;
+    const std::string& getBand() const;  // Get the current frequency band
+    int getBandwidth() const;  // Get the bandwidth of the frequency band
+    int getRange() const;  // Get the range of the frequency band
 
-    // Getter for modulation
-    std::string getModulation() const;
+private:
+    std::string band;  // The frequency band (e.g., "2.4GHz", "5GHz")
+    int bandwidth;  // The bandwidth of the frequency band in MHz
+    int range;  // The range of the frequency band in meters
 };
 
 #endif // FREQUENCYBAND_H
