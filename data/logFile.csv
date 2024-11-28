@@ -1,0 +1,10 @@
+WiFi Type,Num Users,Throughput (KB/ms),Average Latency (ms),Max Latency (ms)
+WiFi 6,1,512,6,2
+WiFi 6,10,291,11,40
+WiFi 6,100,250,13,422
+WiFi 5,1,33.6842,152,125
+WiFi 5,10,122.169,46.1,284
+WiFi 5,100,217.082,26.18,2131
+WiFi 5,1,33.2468,154,129
+WiFi 5,10,121.118,46.5,294
+WiFi 5,100,216.668,26.23,2139
