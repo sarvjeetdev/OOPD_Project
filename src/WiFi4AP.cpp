@@ -57,7 +57,6 @@ void WiFi4AP::simulateCommunication(int numUsers) {
     std::cout << "Simulation completed.\n";
 }
 
-// Calculate throughput, average latency, and maximum latency
 void WiFi4AP::calculateMetrics(int numUsers) {
     float throughput = totalData / totalTime;  // Throughput in KB/ms
 
